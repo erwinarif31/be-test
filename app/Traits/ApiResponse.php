@@ -27,7 +27,7 @@ trait ApiResponse
     protected function success($data = null, LengthAwarePaginator $pagination = null, string $message = 'OK', int $statusCode = 200): JsonResponse
     {
         $response = [
-            'success' => true,
+            'status' => 'success',
             'message' => $message,
         ];
 
@@ -75,21 +75,5 @@ trait ApiResponse
         }
 
         return response()->json($response, $statusCode);
-    }
-
-    /**
- * Return a pagination JSON response from eloquent collection panginate().
-    * @param mixed $data
- */
-
-    protected function paginate($data, string $message = 'OK', int $statusCode = 200): JsonResponse
-    {
-        $pagination = [
-            'success' => true,
-            'message' => $message,
-            'data' => $data->items(),
-        ];
-
-        return $pagination;
     }
 }

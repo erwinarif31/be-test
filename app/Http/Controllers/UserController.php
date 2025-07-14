@@ -2,13 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 
 class UserController extends Controller
 {
+    use ApiResponse;
+
     public function login(Request $requests): JsonResponse|array
     {
         $payload = $requests->validate([
@@ -22,18 +24,32 @@ class UserController extends Controller
             ], 403);
         }
 
-        Log::channel('stderr')->info($requests->user());
         $token = $requests->user()->createToken('auth_token');
+        $user = $requests->user();
 
-        return ['token' => $token->plainTextToken];
+
+        return $this->success(
+            message: 'Login successful',
+            data: [
+                'token' => $token->plainTextToken,
+                'admin' => [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'username' => $user->username,
+                    'email' => $user->email,
+                    'phone' => $user->phone,
+                ],
+            ]
+        );
     }
 
     public function logout(Request $requests): JsonResponse
     {
         $requests->user()->currentAccessToken()->delete();
 
-        return response()->json([
-            'message' => 'Berhasil logout',
-        ]);
+        return $this->success(
+            message: 'Logout successful',
+            data: null
+        );
     }
 }
