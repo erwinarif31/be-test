@@ -3,6 +3,7 @@
 namespace App\Traits;
 
 use Illuminate\Http\JsonResponse;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,9 +21,10 @@ trait ApiResponse
      * @param  mixed|null  $data
      * @param  string  $message
      * @param  int  $statusCode
+     * @param LengthAwarePaginator<array-key,mixed> $pagination
      * @return \Illuminate\Http\JsonResponse
      */
-    protected function success($data = null, string $message = 'OK', int $statusCode = 200): JsonResponse
+    protected function success($data = null, LengthAwarePaginator $pagination = null, string $message = 'OK', int $statusCode = 200): JsonResponse
     {
         $response = [
             'success' => true,
@@ -30,25 +32,24 @@ trait ApiResponse
         ];
 
         if ($data !== null) {
-            if (method_exists($data, 'items')) {
-                $response['data'] = $data->items();
-                $response['pagination'] = [
-                    "total" => $data->total(),
-                    "per_page" => $data->perPage(),
-                    "current_page" => $data->currentPage(),
-                    "last_page" => $data->lastPage(),
-                    "current_page_url" => $data->url($data->currentPage()),
-                    "first_page_url" => $data->url(1),
-                    "last_page_url" => $data->url($data->lastPage()),
-                    "next_page_url" => $data->nextPageUrl(),
-                    "prev_page_url" => $data->previousPageUrl(),
-                    "path" => $data->path(),
-                    "from" => $data->firstItem(),
-                    "to" => $data->lastItem(),
-                ];
-            } else {
-                $response['data'] = $data;
-            }
+            $response['data'] = $data;
+        }
+
+        if ($pagination !== null && $pagination instanceof LengthAwarePaginator) {
+            $response['pagination'] = [
+                "total" => $pagination->total(),
+                "per_page" => $pagination->perPage(),
+                "current_page" => $pagination->currentPage(),
+                "last_page" => $pagination->lastPage(),
+                "current_page_url" => $pagination->url($pagination->currentPage()),
+                "first_page_url" => $pagination->url(1),
+                "last_page_url" => $pagination->url($pagination->lastPage()),
+                "next_page_url" => $pagination->nextPageUrl(),
+                "prev_page_url" => $pagination->previousPageUrl(),
+                "path" => $pagination->path(),
+                "from" => $pagination->firstItem(),
+                "to" => $pagination->lastItem(),
+            ];
         }
 
         return response()->json($response, $statusCode);
@@ -78,7 +79,8 @@ trait ApiResponse
 
     /**
  * Return a pagination JSON response from eloquent collection panginate().
-    */
+    * @param mixed $data
+ */
 
     protected function paginate($data, string $message = 'OK', int $statusCode = 200): JsonResponse
     {
