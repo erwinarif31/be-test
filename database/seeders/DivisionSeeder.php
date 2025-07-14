@@ -12,7 +12,15 @@ class DivisionSeeder extends Seeder
      */
     public function run(): void
     {
-        $divisionsName = ['IT', 'HR', 'Marketing'];
+        $divisionsName = [
+            'Mobile Apps',
+            'QA',
+            'Full Stack',
+            'Backend',
+            'Frontend',
+            'UI/UX Designer'
+        ];
+
 
         foreach ($divisionsName as $name) {
             $division = new Division();
