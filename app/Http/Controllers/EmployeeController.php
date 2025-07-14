@@ -89,4 +89,22 @@ class EmployeeController extends Controller
             message: 'Employee updated successfully',
         );
     }
+
+    public function delete(Request $request, $id)
+    {
+        $employee = Employee::findOrFail($id);
+
+        if ($employee->image) {
+            $imagePath = public_path('storage/' . $employee->image);
+            if (file_exists($imagePath)) {
+                unlink($imagePath);
+            }
+        }
+
+        $employee->delete();
+
+        return $this->success(
+            message: 'Employee deleted successfully',
+        );
+    }
 }
