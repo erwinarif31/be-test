@@ -31,4 +31,17 @@ use Illuminate\Database\Eloquent\Model;
 class Employee extends Model
 {
     use HasUuids;
+
+    protected $fillable = [
+        'image',
+        'name',
+        'phone',
+        'division_id',
+        'position',
+    ];
+
+    public function division()
+    {
+        return $this->belongsTo(Division::class);
+    }
 }
