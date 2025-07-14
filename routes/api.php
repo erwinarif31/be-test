@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\BonusSQL;
 use App\Http\Controllers\DivisionController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\UserController;
@@ -23,3 +24,6 @@ Route::controller(EmployeeController::class)->middleware('auth:sanctum')->group(
     Route::put('/employees/{id}', 'update');
     Route::delete('/employees/{id}', 'delete');
 });
+
+Route::get('/nilaiRT', [BonusSQL::class, 'nilaiRT']);
+Route::get('/nilaiST', [BonusSQL::class, 'nilaiST']);
