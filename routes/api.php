@@ -20,4 +20,5 @@ Route::controller(DivisionController::class)->middleware('auth:sanctum')->group(
 Route::controller(EmployeeController::class)->middleware('auth:sanctum')->group(function () {
     Route::get('/employees', 'index');
     Route::post('/employees', 'store');
+    Route::put('/employees/{id}', 'update');
 });

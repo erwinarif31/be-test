@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Employee;
 use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class EmployeeController extends Controller
 {
@@ -61,6 +62,31 @@ class EmployeeController extends Controller
 
         return $this->success(
             message: 'Employee created successfully',
+        );
+    }
+
+    public function update(Request $request, $id)
+    {
+        $employee = Employee::findOrFail($id);
+
+        $payload = $request->validate([
+            'image' => 'sometimes|image|max:2048',
+            'name' => 'sometimes|string|max:255',
+            'phone' => 'sometimes|string|max:15',
+            'division_id' => 'sometimes|exists:divisions,id',
+            'position' => 'sometimes|string|max:255',
+        ]);
+
+
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('employees', 'public');
+            $payload['image'] = $imagePath;
+        }
+
+        $employee->update($payload);
+
+        return $this->success(
+            message: 'Employee updated successfully',
         );
     }
 }
